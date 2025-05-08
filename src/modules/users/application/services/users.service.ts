@@ -6,6 +6,7 @@ import {
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
+import { PaginationDto } from '../../../../common/dtos/pagination.dto';
 
 @Injectable()
 export class UsersService {
@@ -14,8 +15,16 @@ export class UsersService {
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async findAll() {
-    return this.userRepository.findAll();
+  async findAll(paginationDto: PaginationDto) {
+    const { data, total } = await this.userRepository.findAll(paginationDto);
+    const limit = paginationDto.limit ?? 10;
+    return {
+      data,
+      total,
+      page: paginationDto.page ?? 1,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async findById(id: string) {

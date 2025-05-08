@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../domain/entities/user.entity';
 import { IUserRepository } from '../../domain/interfaces/user.repository.interface';
+import { PaginationDto } from '../../../../common/dtos/pagination.dto';
 
 @Injectable()
 export class UsersRepository implements IUserRepository {
@@ -11,8 +12,20 @@ export class UsersRepository implements IUserRepository {
     private usersRepository: Repository<User>,
   ) {}
 
-  async findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+  async findAll(
+    pagination?: PaginationDto,
+  ): Promise<{ data: User[]; total: number }> {
+    const queryBuilder = this.usersRepository.createQueryBuilder('user');
+
+    const total = await queryBuilder.getCount();
+
+    if (pagination) {
+      queryBuilder.skip(pagination.skip).take(pagination.limit);
+    }
+
+    const data = await queryBuilder.getMany();
+
+    return { data, total };
   }
 
   async findById(id: string): Promise<User | null> {

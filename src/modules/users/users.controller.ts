@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './application/services/users.service';
 import { CreateUserDto } from './application/dto/create-user.dto';
@@ -16,11 +17,13 @@ import {
   ApiOperation,
   ApiResponse,
   ApiTags,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../../common/constants/roles.enum';
+import { PaginationDto } from '../../common/dtos/pagination.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -43,14 +46,24 @@ export class UsersController {
   @Get()
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Listar todos os usuários' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Número da página (começa em 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Quantidade de itens por página',
+  })
   @ApiResponse({
     status: 200,
     description: 'Lista de usuários retornada com sucesso',
   })
   @ApiResponse({ status: 401, description: 'Não autorizado' })
   @ApiResponse({ status: 403, description: 'Acesso proibido' })
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.usersService.findAll(paginationDto);
   }
 
   @Get(':id')

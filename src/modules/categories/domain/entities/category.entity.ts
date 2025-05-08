@@ -19,7 +19,7 @@ export class Category {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ default: true })
+  @Column({ default: true, name: 'is_active' })
   isActive: boolean;
 
   @CreateDateColumn({ name: 'created_at' })

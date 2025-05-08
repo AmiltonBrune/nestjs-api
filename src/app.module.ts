@@ -1,10 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { AddressesModule } from './modules/addresses/addresses.module';
+import { CepModule } from './modules/integrations/cep/cep.module';
+import { PokemonModule } from './modules/integrations/pokemon/pokemon.module';
+import { getDatabaseConfig } from './config/database.config';
+import { ProductsModule } from './modules/products/products.module';
+
 @Module({
   imports: [
     UsersModule,
@@ -16,27 +21,16 @@ import { CategoriesModule } from './modules/categories/categories.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService): TypeOrmModuleOptions => {
-        const config = configService as {
-          get: (key: string) => string | undefined;
-        };
-        return {
-          type: 'postgres',
-          host: config.get('DB_HOST') || 'localhost',
-          port: Number(config.get('DB_PORT') || 5432),
-          username: config.get('DB_USERNAME') || 'postgres',
-          password: config.get('DB_PASSWORD') || 'postgres',
-          database: config.get('DB_DATABASE') || 'pokemon_api',
-          entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          synchronize: config.get('NODE_ENV') === 'development',
-          logging: config.get('NODE_ENV') === 'development',
-        };
-      },
+      useFactory: getDatabaseConfig,
     }),
 
     UsersModule,
     AuthModule,
     CategoriesModule,
+    AddressesModule,
+    CepModule,
+    PokemonModule,
+    ProductsModule,
   ],
 })
 export class AppModule {}

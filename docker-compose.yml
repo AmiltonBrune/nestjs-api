@@ -1,0 +1,65 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nestjs-api
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_DATABASE=nestjs_api
+      - JWT_SECRET=your-super-secret-key-change-in-production
+      - JWT_EXPIRATION=24h
+      - POKEAPI_BASE_URL=https://pokeapi.co/api/v2
+      - VIA_CEP_API_URL=https://viacep.com.br/ws/
+      - CORS_ORIGIN=*
+      - LOG_LEVEL=debug
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - nestjs-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: nestjs-postgres
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=nestjs_api
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - nestjs-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: nestjs-pgadmin
+    ports:
+      - '5050:80'
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - nestjs-network
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+networks:
+  nestjs-network:
+    driver: bridge

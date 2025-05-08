@@ -1,159 +1,168 @@
+# NestJS API
+
+API RESTful desenvolvida com NestJS, implementando uma arquitetura limpa e seguindo os princípios SOLID.
+
+## 🏗️ Estrutura do Projeto
+
+```
 src/
-├── main.ts                      # Ponto de entrada da aplicação
-├── app.module.ts                # Módulo principal da aplicação
-├── common/                      # Código comum/compartilhado
-│   ├── decorators/              # Custom decorators
-│   │   └── roles.decorator.ts
-│   ├── guards/                  # Guards para proteção de rotas
-│   │   └── roles.guard.ts
-│   ├── filters/                 # Filtros para tratamento de exceções
-│   │   └── http-exception.filter.ts
-│   ├── interceptors/            # Interceptors para transformação de respostas
-│   │   └── transform.interceptor.ts
-│   ├── dto/                     # DTOs comuns
-│   │   └── pagination.dto.ts
-│   └── constants/               # Constantes compartilhadas
-│       └── roles.enum.ts
-├── config/                      # Configurações da aplicação
+├── common/                 # Código compartilhado entre módulos
+│   ├── decorators/        # Decoradores personalizados
+│   ├── dtos/             # DTOs compartilhados
+│   ├── filters/          # Filtros de exceção
+│   ├── guards/           # Guards de autenticação
+│   ├── interfaces/       # Interfaces compartilhadas
+│   └── utils/            # Utilitários
+│
+├── config/               # Configurações da aplicação
 │   ├── database.config.ts
-│   └── swagger.config.ts
-├── modules/                     # Módulos da aplicação
-    ├── users/                   # Módulo de Usuários
-    │   ├── application/         # Camada de Aplicação
-    │   │   ├── dto/             # Data Transfer Objects
-    │   │   │   ├── create-user.dto.ts
-    │   │   │   └── update-user.dto.ts
-    │   │   └── services/        # Serviços de Aplicação
-    │   │       └── users.service.ts
-    │   ├── domain/              # Camada de Domínio
-    │   │   ├── entities/        # Entidades de Domínio
-    │   │   │   └── user.entity.ts
-    │   │   └── validators/      # Validadores de Domínio
-    │   │       └── user.validator.ts
-    │   ├── infrastructure/      # Camada de Infraestrutura
-    │   │   └── repositories/    # Repositórios para persistência
-    │   │       └── users.repository.ts
-    │   ├── users.controller.ts  # Controlador para rotas de usuários
-    │   ├── users.module.ts      # Módulo de usuários
-    │   └── users.error.ts       # Tratamento de erros específicos
-    │
-    ├── auth/                    # Módulo de Autenticação
-    │   ├── application/
-    │   │   ├── dto/
-    │   │   │   ├── login.dto.ts
-    │   │   │   └── register.dto.ts
-    │   │   └── services/
-    │   │       └── auth.service.ts
-    │   ├── domain/
-    │   │   └── entities/
-    │   │       └── token.entity.ts
-    │   ├── infrastructure/
-    │   │   └── strategies/
-    │   │       └── jwt.strategy.ts
-    │   ├── auth.controller.ts
-    │   ├── auth.module.ts
-    │   └── auth.error.ts
-    │
-    ├── products/                # Módulo de Produtos
-    │   ├── application/
-    │   │   ├── dto/
-    │   │   │   ├── create-product.dto.ts
-    │   │   │   └── update-product.dto.ts
-    │   │   └── services/
-    │   │       └── products.service.ts
-    │   ├── domain/
-    │   │   ├── entities/
-    │   │   │   └── product.entity.ts
-    │   │   └── validators/
-    │   │       └── product.validator.ts
-    │   ├── infrastructure/
-    │   │   └── repositories/
-    │   │       └── products.repository.ts
-    │   ├── products.controller.ts
-    │   ├── products.module.ts
-    │   └── products.error.ts
-    │
-    ├── categories/              # Módulo de Categorias
-    │   ├── application/
-    │   │   ├── dto/
-    │   │   │   ├── create-category.dto.ts
-    │   │   │   └── update-category.dto.ts
-    │   │   └── services/
-    │   │       └── categories.service.ts
-    │   ├── domain/
-    │   │   ├── entities/
-    │   │   │   └── category.entity.ts
-    │   │   └── validators/
-    │   │       └── category.validator.ts
-    │   ├── infrastructure/
-    │   │   └── repositories/
-    │   │       └── categories.repository.ts
-    │   ├── categories.controller.ts
-    │   ├── categories.module.ts
-    │   └── categories.error.ts
-    │
-    ├── addresses/               # Módulo de Endereços
-    │   ├── application/
-    │   │   ├── dto/
-    │   │   │   ├── create-address.dto.ts
-    │   │   │   └── update-address.dto.ts
-    │   │   └── services/
-    │   │       └── addresses.service.ts
-    │   ├── domain/
-    │   │   ├── entities/
-    │   │   │   └── address.entity.ts
-    │   │   └── validators/
-    │   │       └── address.validator.ts
-    │   ├── infrastructure/
-    │   │   └── repositories/
-    │   │       └── addresses.repository.ts
-    │   ├── addresses.controller.ts
-    │   ├── addresses.module.ts
-    │   └── addresses.error.ts
-    │
-    ├── orders/                  # Módulo de Pedidos
-    │   ├── application/
-    │   │   ├── dto/
-    │   │   │   ├── create-order.dto.ts
-    │   │   │   └── update-order.dto.ts
-    │   │   └── services/
-    │   │       └── orders.service.ts
-    │   ├── domain/
-    │   │   ├── entities/
-    │   │   │   ├── order.entity.ts
-    │   │   │   └── order-item.entity.ts
-    │   │   └── validators/
-    │   │       └── order.validator.ts
-    │   ├── infrastructure/
-    │   │   └── repositories/
-    │   │       ├── orders.repository.ts
-    │   │       └── order-items.repository.ts
-    │   ├── orders.controller.ts
-    │   ├── orders.module.ts
-    │   └── orders.error.ts
-    │
-    ├── cep/                     # Módulo de Consulta de CEP
-    │   ├── application/
-    │   │   ├── dto/
-    │   │   │   └── cep-response.dto.ts
-    │   │   └── services/
-    │   │       └── cep.service.ts
-    │   ├── infrastructure/
-    │   │   └── services/
-    │   │       └── viaCep.service.ts
-    │   ├── cep.controller.ts
-    │   ├── cep.module.ts
-    │   └── cep.error.ts
-    │
-    └── pokemon/                 # Módulo de PokeAPI
-        ├── application/
-        │   ├── dto/
-        │   │   └── pokemon-search.dto.ts
-        │   └── services/
-        │       └── pokemon.service.ts
-        ├── infrastructure/
-        │   └── services/
-        │       └── pokeApi.service.ts
-        ├── pokemon.controller.ts
-        ├── pokemon.module.ts
-        └── pokemon.error.ts
+│   ├── jwt.config.ts
+│   ├── swagger.config.ts
+│   ├── pokeApi.config.ts
+│   └── viaCepApi.config.ts
+│
+├── modules/             # Módulos da aplicação
+│   ├── auth/           # Autenticação
+│   ├── users/          # Gerenciamento de usuários
+│   ├── products/       # Gerenciamento de produtos
+│   ├── categories/     # Gerenciamento de categorias
+│   ├── addresses/      # Gerenciamento de endereços
+│   └── integrations/   # Integrações externas
+│       ├── cep/        # Integração com ViaCEP
+│       └── pokemon/    # Integração com PokeAPI
+│
+└── main.ts             # Ponto de entrada da aplicação
+```
+
+## 🚀 Tecnologias Utilizadas
+
+- NestJS
+- TypeScript
+- TypeORM
+- PostgreSQL
+- JWT Authentication
+- Swagger/OpenAPI
+- Docker
+- Jest (Testes)
+- Axios (Integrações HTTP)
+- Class Validator/Transformer
+- Passport.js
+
+## 📋 Pré-requisitos
+
+- Node.js (v18 ou superior)
+- Docker e Docker Compose
+- Git
+
+## 🔧 Configuração e Execução
+
+### Usando Docker (Recomendado)
+
+1. Clone o repositório:
+```bash
+git clone https://github.com/seu-usuario/nestjs-api.git
+cd nestjs-api
+```
+
+2. Configure as variáveis de ambiente:
+```bash
+cp .env.example .env
+```
+
+3. Execute o setup completo do Docker (recomendado):
+```bash
+npm run docker:full-setup
+```
+
+Este comando vai:
+- Parar todos os containers existentes
+- Remover volumes antigos
+- Reconstruir as imagens
+- Iniciar os containers
+- Executar as migrações
+- Executar os seeds
+
+Ou, se preferir, pode executar os comandos separadamente:
+```bash
+npm run setup:docker
+```
+
+### Desenvolvimento Local
+
+1. Clone o repositório:
+```bash
+git clone https://github.com/seu-usuario/nestjs-api.git
+cd nestjs-api
+```
+
+2. Configure as variáveis de ambiente:
+```bash
+cp .env.example .env
+```
+
+3. Execute o setup local:
+```bash
+npm run setup:local
+```
+
+4. Inicie o projeto em modo desenvolvimento:
+```bash
+npm run start:dev
+```
+
+## 📚 Documentação da API
+
+A documentação da API está disponível através do Swagger UI:
+```
+http://localhost:3000/api/docs
+```
+
+## 🐳 Docker
+
+O projeto inclui configuração Docker completa:
+
+### Dockerfile
+- Multi-stage build para otimização
+- Node.js 18 Alpine como base
+- Instalação otimizada de dependências
+- Configuração de produção
+
+### Docker Compose
+- Serviço de API NestJS
+- Banco de dados PostgreSQL
+- pgAdmin para gerenciamento do banco de dados
+- Volumes para persistência
+- Rede dedicada
+- Variáveis de ambiente configuradas
+
+### Portas
+- API: 3000
+- PostgreSQL: 5432
+- pgAdmin: 5050
+
+### Acessando o pgAdmin
+1. Acesse http://localhost:5050
+2. Faça login com as credenciais:
+   - Email: admin@admin.com
+   - Senha: admin
+3. Adicione um novo servidor:
+   - Host: postgres
+   - Port: 5432
+   - Database: nestjs
+   - Username: postgres
+   - Password: postgres
+
+### Comandos Docker Úteis
+```bash
+# Setup completo (recomendado)
+npm run docker:full-setup
+
+# Outros comandos úteis
+npm run docker:build    # Apenas build das imagens
+npm run docker:up       # Iniciar containers
+npm run docker:down     # Parar containers
+npm run docker:restart  # Reiniciar containers
+npm run docker:logs     # Ver logs
+npm run docker:clean    # Limpar tudo
+npm run docker:rebuild  # Reconstruir sem cache
+```

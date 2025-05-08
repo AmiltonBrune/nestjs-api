@@ -9,6 +9,7 @@ import {
 import { Role } from '../../../../common/constants/roles.enum';
 import { Address } from '../../../addresses/domain/entities/address.entity';
 import { Order } from '../../../orders/domain/entities/order.entity';
+import { Product } from '../../../products/domain/entities/product.entity';
 
 @Entity('users')
 export class User {
@@ -27,11 +28,12 @@ export class User {
   @Column({
     type: 'enum',
     enum: Role,
-    default: Role.USER,
+    array: true,
+    default: '{USER}',
   })
   roles: Role[];
 
-  @Column({ default: true })
+  @Column({ default: true, name: 'is_active' })
   isActive: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
@@ -45,4 +47,7 @@ export class User {
 
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
+
+  @OneToMany(() => Product, (product) => product.user)
+  products: Product[];
 }
