@@ -2,7 +2,7 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import {
   IUserRepository,
   USER_REPOSITORY,
-} from '../../domain/repositories/user.repository.interface';
+} from '../../domain/interfaces/user.repository.interface';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -30,6 +30,7 @@ export class UsersService {
     const existingUser = await this.userRepository.findByEmail(
       createUserDto.email,
     );
+
     if (existingUser) {
       throw new BadRequestException('Este email já está em uso');
     }
@@ -49,6 +50,7 @@ export class UsersService {
       const existingUser = await this.userRepository.findByEmail(
         updateUserDto.email,
       );
+
       if (existingUser && existingUser.id !== id) {
         throw new BadRequestException('Este email já está em uso');
       }

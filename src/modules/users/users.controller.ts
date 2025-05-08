@@ -6,26 +6,26 @@ import {
   Patch,
   Param,
   Delete,
-  // UseGuards,
+  UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './application/services/users.services';
+import { UsersService } from './application/services/users.service';
 import { CreateUserDto } from './application/dto/create-user.dto';
 import { UpdateUserDto } from './application/dto/update-user.dto';
 import {
-  // ApiBearerAuth,
+  ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-// import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-// import { RolesGuard } from '../../common/guards/roles.guard';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Role } from '../../common/constants/roles.enum';
 
 @ApiTags('users')
 @Controller('users')
-// @UseGuards(JwtAuthGuard, RolesGuard)
-// @ApiBearerAuth('JWT-auth')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@ApiBearerAuth('JWT-auth')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
